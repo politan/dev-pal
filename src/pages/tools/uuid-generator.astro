@@ -1,23 +1,17 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import ToolPage from '../../components/ToolPage.vue';
+import UUIDGenerator from '../../components/tools/UUIDGenerator.vue';
 import { Fingerprint } from 'lucide-vue-next';
 ---
 
 <AppLayout title="UUID Generator - DevPal" currentTool="uuid-generator">
   <ToolPage 
     title="UUID/GUID Generator"
-    description="Generate various versions of UUIDs, individually or in batches"
+    description="Generate various versions of UUIDs, individually or in batches with collision detection"
     icon={Fingerprint}
-    tags={['Generator', 'Batch', 'UUID']}
-    comingSoon={true}
-    expectedFeatures={[
-      'UUID v1, v4, and v5 generation',
-      'Bulk generation with custom quantities',
-      'Copy to clipboard functionality',
-      'Export as JSON, CSV, or plain text',
-      'Real-time generation as you type'
-    ]}
-    client:load
-  />
+    tags={['Generator', 'Batch', 'UUID', 'v1', 'v4', 'v7']}
+  >
+    <UUIDGenerator client:load />
+  </ToolPage>
 </AppLayout>

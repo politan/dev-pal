@@ -44,6 +44,10 @@ src/
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
 | `npm run type-check` | Run TypeScript type checking |
+| `npm run test` | Run tests in watch mode |
+| `npm run test:run` | Run tests once |
+| `npm run test:ui` | Run tests with UI interface |
+| `npm run test:coverage` | Run tests with coverage report |
 
 ## Architecture
 
@@ -93,9 +97,36 @@ The application uses a sidebar-based navigation where users:
 - shadcn/ui color system with HSL color variables
 - Responsive design with mobile-first approach
 
+## Testing
+
+The project uses **Vitest** as the testing framework with comprehensive test coverage for utilities and components.
+
+### Test Structure
+- `src/utils/*.test.ts` - Unit tests for utility functions
+- `src/components/**/*.test.ts` - Component tests using Vue Test Utils
+- `src/test/setup.ts` - Global test configuration and mocks
+
+### Test Environment
+- **Test Runner**: Vitest with happy-dom environment
+- **Component Testing**: Vue Test Utils with proper mocking
+- **Coverage**: V8 provider with HTML, text, and JSON reports
+- **Mocks**: Crypto API, clipboard, and Lucide icons properly mocked
+
+### Running Tests
+- Development: `npm run test` (watch mode)
+- CI/Production: `npm run test:run` (single run)
+- Interactive: `npm run test:ui` (Vitest UI)
+- Coverage: `npm run test:coverage`
+
+### Test Examples
+- **UUID Utility**: Tests generation, formatting, collision detection, and validation
+- **UUID Component**: Tests user interactions, state management, and UI functionality
+- **Mocking Strategy**: Browser APIs and external dependencies properly stubbed
+
 ## Implementation Notes
 
 - **Security**: Handle API keys and tokens securely for AI integrations
 - **Performance**: Real-time feedback for tools like regex testing, JSON formatting
 - **Extensibility**: Modular architecture allows easy addition of new tools
 - **Type Safety**: Full TypeScript support across Astro and Vue components
+- **Testing**: Comprehensive test coverage with Vitest and Vue Test Utils
