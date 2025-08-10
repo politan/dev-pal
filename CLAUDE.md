@@ -47,10 +47,18 @@ src/
 
 ## Architecture
 
-### Astro Islands
+### Layout System
+- **AppLayout.astro**: Main application layout with sidebar navigation
+- **BaseLayout.astro**: Base HTML structure and global styles
+- **Sidebar.vue**: Left navigation panel with categorized tool links
 - Uses Astro's islands architecture for optimal performance
 - Vue components are hydrated only when needed using `client:load` directive
-- Static content is server-rendered by default
+
+### Navigation Structure
+The application uses a sidebar-based navigation where users:
+1. Select tools from the left sidebar organized by categories
+2. Main content area displays the selected tool
+3. Welcome screen shown when no tool is selected
 
 ### Tool Categories
 
@@ -67,10 +75,16 @@ src/
    - HTTP client, webhook tester
 
 ### Component Structure
-- `ToolCard.vue`: Reusable card component for each tool
-- `ToolGrid.vue`: Landing page with categorized tool sections  
-- Each tool will have its own route in `src/pages/tools/`
+- `Sidebar.vue`: Main navigation with tool categories and links
+- `WelcomeContent.vue`: Landing content when no tool is selected
+- `ToolPage.vue`: Reusable wrapper for individual tool pages
+- Each tool has its own route in `src/pages/tools/` using the AppLayout
 - Vue components use Composition API with `<script setup>`
+
+### Routing
+- `/` - Welcome page with sidebar navigation
+- `/tools/{tool-name}` - Individual tool pages
+- Active tool is highlighted in sidebar via `currentTool` prop
 
 ## Styling Guidelines
 

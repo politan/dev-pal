@@ -1,0 +1,24 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import ToolPage from '../../components/ToolPage.vue';
+import { Braces } from 'lucide-vue-next';
+---
+
+<AppLayout title="JSON Formatter - DevPal" currentTool="json-formatter">
+  <ToolPage 
+    title="JSON Formatter & Validator"
+    description="Beautify, minify, and validate JSON data with syntax highlighting"
+    icon={Braces}
+    tags={['JSON', 'Format', 'Validate', 'Syntax']}
+    comingSoon={true}
+    expectedFeatures={[
+      'Real-time JSON formatting and validation',
+      'Syntax highlighting with error detection',
+      'Minify and beautify JSON data',
+      'Tree view for complex JSON structures',
+      'Import from file or URL',
+      'Export formatted JSON'
+    ]}
+    client:load
+  />
+</AppLayout>

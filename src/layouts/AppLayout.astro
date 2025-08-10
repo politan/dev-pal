@@ -1,0 +1,27 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Sidebar from '../components/Sidebar.vue';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  currentTool?: string;
+}
+
+const { 
+  title = "DevPal - Your AI-Powered Developer Sidekick",
+  description = "Streamline your development workflow with essential utilities and AI-powered tools",
+  currentTool
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="flex h-screen bg-background">
+    <Sidebar currentTool={currentTool} client:load />
+    <main class="flex-1 ml-64 overflow-y-auto">
+      <div class="p-8">
+        <slot />
+      </div>
+    </main>
+  </div>
+</BaseLayout>
