@@ -179,7 +179,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { 
   Plus, 
@@ -238,10 +238,8 @@ function formatTime(date: Date): string {
 function generateSingleUUID() {
   const newUUID = generateUUID(options, existingUUIDs.value)
   
-  // Check if we had to reroll (collision detection is handled in utility)
-  if (existingUUIDs.value.has(newUUID.original)) {
-    collisionCount.value++
-  }
+  // Track actual collisions from the generation process
+  collisionCount.value += newUUID.collisions
   
   existingUUIDs.value.add(newUUID.original)
   generatedUUIDs.value.push(newUUID)
@@ -257,9 +255,8 @@ function generateBulkUUIDs() {
   for (let i = 0; i < count; i++) {
     const newUUID = generateUUID(options, existingUUIDs.value)
     
-    if (existingUUIDs.value.has(newUUID.original)) {
-      collisionCount.value++
-    }
+    // Track actual collisions from the generation process
+    collisionCount.value += newUUID.collisions
     
     existingUUIDs.value.add(newUUID.original)
     generatedUUIDs.value.push(newUUID)
@@ -329,15 +326,65 @@ function exportUUIDs(format: 'json' | 'csv') {
     mimeType = 'text/csv'
   }
 
-  const blob = new Blob([content], { type: mimeType })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  link.click()
-  URL.revokeObjectURL(url)
+  let url: string | null = null
 
-  showToastMessage(`Exported ${data.length} UUIDs as ${format.toUpperCase()}`)
+  try {
+    const blob = new Blob([content], { type: mimeType })
+    url = URL.createObjectURL(blob)
+    
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    link.style.display = 'none'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    showToastMessage(`Exported ${data.length} UUIDs as ${format.toUpperCase()}`)
+  } catch (error) {
+    console.error('Failed to export UUIDs via programmatic download:', error)
+    
+    // Fallback 1: Try Web Share API if available
+    if (navigator.share && 'canShare' in navigator) {
+      const file = new File([content], filename, { type: mimeType })
+      if (navigator.canShare({ files: [file] })) {
+        try {
+          navigator.share({
+            title: `UUID Export - ${format.toUpperCase()}`,
+            text: `Exported ${data.length} UUIDs`,
+            files: [file]
+          })
+          showToastMessage(`Shared ${data.length} UUIDs via system share`)
+          return
+        } catch (shareError) {
+          console.error('Web Share API failed:', shareError)
+        }
+      }
+    }
+    
+    // Fallback 2: Open in new window/tab for manual save
+    try {
+      const dataUri = `data:${mimeType};charset=utf-8,${encodeURIComponent(content)}`
+      const newWindow = window.open(dataUri, '_blank')
+      if (newWindow) {
+        showToastMessage(`Opened ${format.toUpperCase()} in new tab - use browser's Save As to download`)
+      } else {
+        throw new Error('Popup blocked')
+      }
+    } catch (fallbackError) {
+      console.error('All export methods failed:', fallbackError)
+      showToastMessage(`Export failed. Please check browser settings and try again.`)
+    }
+  } finally {
+    // Clean up the blob URL only if it was created
+    if (url) {
+      try {
+        URL.revokeObjectURL(url)
+      } catch (revokeError) {
+        console.warn('Failed to revoke blob URL:', revokeError)
+      }
+    }
+  }
 }
 
 // Toast notification
@@ -350,5 +397,7 @@ function showToastMessage(message: string) {
 }
 
 // Generate initial UUID on mount
-generateSingleUUID()
+onMounted(() => {
+  generateSingleUUID()
+})
 </script>

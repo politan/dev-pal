@@ -15,6 +15,7 @@ export interface GeneratedUUID {
   version: UUIDVersion
   format: UUIDFormat
   includeDashes: boolean
+  collisions: number
 }
 
 // Generate crypto-secure random values
@@ -139,6 +140,7 @@ export function generateUUID(options: UUIDOptions, existingUUIDs: Set<string>): 
   } while (existingUUIDs.has(uuid))
   
   const formatted = formatUUID(uuid, options)
+  const collisions = attempts - 1 // Number of collision retries
   
   return {
     id: `uuid_${Date.now()}_${Math.random().toString(36).substring(2)}`,
@@ -147,7 +149,8 @@ export function generateUUID(options: UUIDOptions, existingUUIDs: Set<string>): 
     timestamp: new Date(),
     version: options.version,
     format: options.format,
-    includeDashes: options.includeDashes
+    includeDashes: options.includeDashes,
+    collisions
   }
 }
 

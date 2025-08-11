@@ -2,7 +2,7 @@
 
 > Your AI-Powered Developer Sidekick.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Status](https://img.shields.io/badge/status-in%20development-orange.svg)
+![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg) ![Status](https://img.shields.io/badge/status-in%20development-orange.svg)
 
 DevPal is a versatile, all-in-one desktop application built to streamline a developer's daily workflow. It combines essential utilities with powerful, specialized tools for AI development, putting everything you need right at your fingertips.
 
