@@ -21,11 +21,11 @@ beforeAll(() => {
       }),
       hash: vi.fn(() => 'mock-hash'),
       subtle: {} as SubtleCrypto
-    } as Crypto
+    } as Crypto & { hash: any }
   } else {
     // If crypto exists, ensure hash method is mocked
-    if (!global.crypto.hash) {
-      global.crypto.hash = vi.fn(() => 'mock-hash')
+    if (!(global.crypto as any).hash) {
+      (global.crypto as any).hash = vi.fn(() => 'mock-hash')
     }
   }
 
