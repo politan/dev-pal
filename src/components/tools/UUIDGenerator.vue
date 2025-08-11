@@ -193,8 +193,7 @@ import {
   generateUUID, 
   type UUIDOptions, 
   type GeneratedUUID, 
-  type UUIDFormat,
-  type UUIDVersion
+  type UUIDFormat
 } from '../../utils/uuid'
 
 // Reactive state
@@ -285,7 +284,7 @@ async function copyToClipboard(text: string) {
     try {
       await copy(text)
       showToastMessage('UUID copied to clipboard!')
-    } catch (error) {
+    } catch (_error) {
       showToastMessage('Failed to copy UUID')
     }
   } else {
@@ -293,7 +292,7 @@ async function copyToClipboard(text: string) {
     try {
       await navigator.clipboard.writeText(text)
       showToastMessage('UUID copied to clipboard!')
-    } catch (error) {
+    } catch (_error) {
       showToastMessage('Failed to copy UUID')
     }
   }

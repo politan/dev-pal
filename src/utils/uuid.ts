@@ -123,7 +123,18 @@ function formatUUID(uuid: string, options: UUIDOptions): string {
   return formatted
 }
 
-// Main UUID generation function
+/**
+ * Generates a UUID with collision detection and formatting options.
+ * 
+ * @param options - Configuration object for UUID generation and formatting
+ * @param existingUUIDs - Set of raw, hyphenated UUID strings (the original field returned by prior calls).
+ *                        Formatted IDs (no dashes or changed casing) will not be checked for collisions.
+ * @returns GeneratedUUID object containing:
+ *   - id: Unique identifier string for tracking this generation
+ *   - original: Raw hyphenated UUID string as generated
+ *   - formatted: UUID string formatted according to options (case, dashes)
+ *   - collisions: Number of collision retries that occurred during generation
+ */
 export function generateUUID(options: UUIDOptions, existingUUIDs: Set<string>): GeneratedUUID {
   let uuid: string
   let attempts = 0
