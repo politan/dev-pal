@@ -22,6 +22,11 @@ beforeAll(() => {
       hash: vi.fn(() => 'mock-hash'),
       subtle: {} as SubtleCrypto
     } as Crypto
+  } else {
+    // If crypto exists, ensure hash method is mocked
+    if (!global.crypto.hash) {
+      global.crypto.hash = vi.fn(() => 'mock-hash')
+    }
   }
 
   // Mock clipboard API
