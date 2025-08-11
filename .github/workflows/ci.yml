@@ -46,14 +46,6 @@ jobs:
       - name: Run build
         run: npm run build
         
-      - name: Upload build artifacts (optional)
-        uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: build-artifacts-node-${{ matrix.node-version }}
-          path: dist/
-          retention-days: 7
-          
   # Optional: Add a job summary
   summary:
     name: Summary
@@ -73,6 +65,6 @@ jobs:
             echo "❌ **Build and Test**: Failed" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch**: `${{ github.ref_name }}`" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: `${{ github.sha }}`" >> $GITHUB_STEP_SUMMARY
           echo "**Triggered by**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
