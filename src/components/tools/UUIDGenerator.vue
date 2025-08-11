@@ -400,4 +400,21 @@ function showToastMessage(message: string) {
 onMounted(() => {
   generateSingleUUID()
 })
+
+// Expose component properties and methods for testing
+defineExpose({
+  generatedUUIDs,
+  currentUUID,
+  existingUUIDs,
+  collisionCount,
+  bulkCount,
+  showToast,
+  toastMessage,
+  formatDisplayName,
+  formatTime,
+  exportUUIDs,
+  generateSingleUUID,
+  generateBulkUUIDs,
+  clearAll
+})
 </script>

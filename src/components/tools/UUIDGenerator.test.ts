@@ -1,7 +1,25 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, type VueWrapper } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import UUIDGenerator from './UUIDGenerator.vue'
+import type { GeneratedUUID, UUIDFormat } from '../../utils/uuid'
+
+// Define the exposed component interface
+interface UUIDGeneratorExposed {
+  generatedUUIDs: GeneratedUUID[]
+  currentUUID: GeneratedUUID | null
+  existingUUIDs: Set<string>
+  collisionCount: number
+  bulkCount: number
+  showToast: boolean
+  toastMessage: string
+  formatDisplayName: (format: UUIDFormat) => string
+  formatTime: (date: Date) => string
+  exportUUIDs: (format: 'json' | 'csv') => void
+  generateSingleUUID: () => void
+  generateBulkUUIDs: () => void
+  clearAll: () => void
+}
 
 // Mock lucide-vue-next icons
 vi.mock('lucide-vue-next', () => ({
@@ -22,11 +40,11 @@ vi.mock('@vueuse/core', () => ({
 }))
 
 describe('UUIDGenerator Component', () => {
-  let wrapper: ReturnType<typeof mount>
+  let wrapper: VueWrapper<UUIDGeneratorExposed>
 
   beforeEach(() => {
     vi.clearAllMocks()
-    wrapper = mount(UUIDGenerator)
+    wrapper = mount(UUIDGenerator) as VueWrapper<UUIDGeneratorExposed>
   })
 
   describe('Initial State', () => {
@@ -133,13 +151,18 @@ describe('UUIDGenerator Component', () => {
       const bulkInput = wrapper.find('input[type="number"]')
       await bulkInput.setValue(3)
       
-      // Trigger bulk generation (find button with Hash icon)
-      const buttons = wrapper.findAll('button')
-      const bulkButton = buttons.find(btn => btn.text().includes('Hash'))
-      
+      // Trigger bulk generation (find button next to number input)
+      const bulkButton = wrapper.find('input[type="number"]').element.nextElementSibling as HTMLButtonElement
       expect(bulkButton).toBeDefined()
+      expect(bulkButton.tagName).toBe('BUTTON')
       
-      await bulkButton.trigger('click')
+      // Use wrapper.find to get the VueWrapper for the button
+      const bulkButtonWrapper = wrapper.findAll('button').find(btn => 
+        btn.element === bulkButton
+      )
+      
+      expect(bulkButtonWrapper).toBeDefined()
+      await bulkButtonWrapper!.trigger('click')
       await nextTick()
 
       expect(wrapper.vm.generatedUUIDs.length).toBe(initialCount + 3)
