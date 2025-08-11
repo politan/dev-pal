@@ -1,0 +1,17 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import ToolPage from '../../components/ToolPage.vue';
+import Base64EncoderDecoder from '../../components/tools/Base64EncoderDecoder.vue';
+import { FileText } from 'lucide-vue-next';
+---
+
+<AppLayout title="Base64 Encoder/Decoder - DevPal" currentTool="base64-encoder">
+  <ToolPage 
+    title="Base64 Encoder/Decoder"
+    description="Encode text to Base64 or decode Base64 back to readable text with real-time processing"
+    icon={FileText}
+    tags={['Encoder', 'Decoder', 'Base64', 'Text', 'Binary']}
+  >
+    <Base64EncoderDecoder client:load />
+  </ToolPage>
+</AppLayout>
