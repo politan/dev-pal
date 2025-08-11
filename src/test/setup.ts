@@ -19,6 +19,7 @@ beforeAll(() => {
           return v.toString(16)
         })
       }),
+      hash: vi.fn(() => 'mock-hash'),
       subtle: {} as SubtleCrypto
     } as Crypto
   }
