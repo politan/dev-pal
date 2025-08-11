@@ -23,7 +23,21 @@ function getRandomValues(length: number): Uint8Array {
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
     return crypto.getRandomValues(new Uint8Array(length))
   }
-  // Fallback for environments without crypto
+  
+  // In production, require secure random values
+  if (import.meta.env.PROD) {
+    throw new Error(
+      'crypto.getRandomValues is required for secure UUID generation in production. ' +
+      'This environment does not provide cryptographically secure random values.'
+    )
+  }
+  
+  // Development/test fallback with warning
+  console.warn(
+    '⚠️  UUID Generation Warning: Using Math.random() fallback for development. ' +
+    'This is NOT cryptographically secure and should not be used in production.'
+  )
+  
   const array = new Uint8Array(length)
   for (let i = 0; i < length; i++) {
     array[i] = Math.floor(Math.random() * 256)
@@ -54,9 +68,10 @@ function generateUUIDv1(): string {
   const timestamp = Date.now()
   const timestampHex = timestamp.toString(16).padStart(12, '0')
   
-  // Generate random node (MAC-like) and clock sequence
-  const node = Math.random().toString(16).substring(2, 14)
-  const clockSeq = Math.random().toString(16).substring(2, 6)
+  // Generate random node (MAC-like) and clock sequence using secure random
+  const randomBytes = getRandomValues(8) // 6 bytes for node + 2 for clock sequence
+  const node = Array.from(randomBytes.slice(0, 6), byte => byte.toString(16).padStart(2, '0')).join('')
+  const clockSeq = Array.from(randomBytes.slice(6, 8), byte => byte.toString(16).padStart(2, '0')).join('')
   
   // Format as UUID v1
   const timeLow = timestampHex.substring(4, 12)
@@ -71,10 +86,9 @@ function generateUUIDv7(): string {
   const timestamp = Date.now()
   const timestampHex = timestamp.toString(16).padStart(12, '0')
   
-  // Generate random bytes for the rest
-  const randomPart = Array.from({ length: 10 }, () => 
-    Math.floor(Math.random() * 256).toString(16).padStart(2, '0')
-  ).join('')
+  // Generate random bytes for the rest using secure random
+  const randomBytes = getRandomValues(10)
+  const randomPart = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('')
   
   // Format as UUID v7
   return `${timestampHex.substring(0, 8)}-${timestampHex.substring(8, 12)}-7${randomPart.substring(0, 3)}-${randomPart.substring(3, 7)}-${randomPart.substring(7, 19)}`
@@ -153,8 +167,12 @@ export function generateUUID(options: UUIDOptions, existingUUIDs: Set<string>): 
   const formatted = formatUUID(uuid, options)
   const collisions = attempts - 1 // Number of collision retries
   
+  // Generate secure random suffix for ID
+  const idRandomBytes = getRandomValues(4)
+  const randomSuffix = Array.from(idRandomBytes, byte => byte.toString(36)).join('')
+  
   return {
-    id: `uuid_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+    id: `uuid_${Date.now()}_${randomSuffix}`,
     original: uuid,
     formatted,
     timestamp: new Date(),
