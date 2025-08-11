@@ -133,16 +133,16 @@ describe('UUIDGenerator Component', () => {
       const bulkInput = wrapper.find('input[type="number"]')
       await bulkInput.setValue(3)
       
-      // Trigger bulk generation (find button with Hash icon or second button)
+      // Trigger bulk generation (find button with Hash icon)
       const buttons = wrapper.findAll('button')
-      const bulkButton = buttons.find(btn => btn.text().includes('Hash')) || buttons[1]
+      const bulkButton = buttons.find(btn => btn.text().includes('Hash'))
       
-      if (bulkButton) {
-        await bulkButton.trigger('click')
-        await nextTick()
+      expect(bulkButton).toBeDefined()
+      
+      await bulkButton.trigger('click')
+      await nextTick()
 
-        expect(wrapper.vm.generatedUUIDs.length).toBe(initialCount + 3)
-      }
+      expect(wrapper.vm.generatedUUIDs.length).toBe(initialCount + 3)
     })
   })
 
@@ -165,14 +165,16 @@ describe('UUIDGenerator Component', () => {
         btn.html().includes('Trash')
       )
       
-      if (clearButton && !clearButton.attributes('disabled')) {
-        await clearButton.trigger('click')
-        await nextTick()
+      expect(clearButton).toBeDefined()
+      expect(clearButton!.exists()).toBe(true)
+      expect(clearButton!.attributes('disabled')).toBeFalsy()
+      
+      await clearButton!.trigger('click')
+      await nextTick()
 
-        expect(wrapper.vm.generatedUUIDs).toHaveLength(0)
-        expect(wrapper.vm.currentUUID).toBe(null)
-        expect(wrapper.vm.collisionCount).toBe(0)
-      }
+      expect(wrapper.vm.generatedUUIDs).toHaveLength(0)
+      expect(wrapper.vm.currentUUID).toBe(null)
+      expect(wrapper.vm.collisionCount).toBe(0)
     })
   })
 

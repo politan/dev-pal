@@ -1,24 +1,26 @@
 <template>
-  <aside class="fixed left-0 top-0 h-full w-64 bg-card border-r border-border overflow-y-auto">
+  <aside class="fixed left-0 top-0 h-full w-64 bg-card border-r border-border overflow-y-auto hidden md:block">
     <div class="p-6">
       <div class="mb-8">
         <h1 class="text-2xl font-bold text-foreground">DevPal</h1>
         <p class="text-sm text-muted-foreground mt-1">Developer Toolkit</p>
       </div>
 
-      <nav class="space-y-6">
+      <nav class="space-y-6" role="navigation" aria-label="DevPal tools navigation">
         <!-- Core Developer Utilities -->
         <div>
-          <h2 class="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center">
+          <h2 id="core-utilities" class="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center">
             <Settings class="w-4 h-4 mr-2" />
             Core Utilities
           </h2>
-          <ul class="space-y-1">
+          <ul class="space-y-1" aria-labelledby="core-utilities">
             <li v-for="tool in coreTools" :key="tool.id">
               <a
                 :href="`/tools/${tool.id}`"
-                class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+                class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="{ 'bg-accent text-accent-foreground': currentTool === tool.id }"
+                :aria-current="currentTool === tool.id ? 'page' : undefined"
+                :tabindex="currentTool === tool.id ? 0 : -1"
               >
                 <component :is="tool.icon" class="w-4 h-4 mr-3" />
                 {{ tool.name }}
@@ -29,16 +31,18 @@
 
         <!-- Code & Text Tools -->
         <div>
-          <h2 class="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center">
+          <h2 id="code-text" class="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center">
             <Code class="w-4 h-4 mr-2" />
             Code & Text
           </h2>
-          <ul class="space-y-1">
+          <ul class="space-y-1" aria-labelledby="code-text">
             <li v-for="tool in codeTools" :key="tool.id">
               <a
                 :href="`/tools/${tool.id}`"
-                class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+                class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="{ 'bg-accent text-accent-foreground': currentTool === tool.id }"
+                :aria-current="currentTool === tool.id ? 'page' : undefined"
+                :tabindex="currentTool === tool.id ? 0 : -1"
               >
                 <component :is="tool.icon" class="w-4 h-4 mr-3" />
                 {{ tool.name }}
@@ -49,16 +53,18 @@
 
         <!-- AI Toolkit -->
         <div>
-          <h2 class="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center">
+          <h2 id="ai-toolkit" class="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center">
             <Bot class="w-4 h-4 mr-2" />
             AI Toolkit
           </h2>
-          <ul class="space-y-1">
+          <ul class="space-y-1" aria-labelledby="ai-toolkit">
             <li v-for="tool in aiTools" :key="tool.id">
               <a
                 :href="`/tools/${tool.id}`"
-                class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+                class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="{ 'bg-accent text-accent-foreground': currentTool === tool.id }"
+                :aria-current="currentTool === tool.id ? 'page' : undefined"
+                :tabindex="currentTool === tool.id ? 0 : -1"
               >
                 <component :is="tool.icon" class="w-4 h-4 mr-3" />
                 {{ tool.name }}
@@ -69,16 +75,18 @@
 
         <!-- API & Integration -->
         <div>
-          <h2 class="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center">
+          <h2 id="api-integration" class="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center">
             <Plug class="w-4 h-4 mr-2" />
             API & Integration
           </h2>
-          <ul class="space-y-1">
+          <ul class="space-y-1" aria-labelledby="api-integration">
             <li v-for="tool in apiTools" :key="tool.id">
               <a
                 :href="`/tools/${tool.id}`"
-                class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+                class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="{ 'bg-accent text-accent-foreground': currentTool === tool.id }"
+                :aria-current="currentTool === tool.id ? 'page' : undefined"
+                :tabindex="currentTool === tool.id ? 0 : -1"
               >
                 <component :is="tool.icon" class="w-4 h-4 mr-3" />
                 {{ tool.name }}
