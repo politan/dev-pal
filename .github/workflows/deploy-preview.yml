@@ -1,21 +1,35 @@
 name: Deploy Preview
 
 on:
+  # For development branch pushes, depend on CI workflow
+  workflow_run:
+    workflows: ["CI - Build and Test"]
+    types:
+      - completed
+    branches: [ development ]
+  # For pull requests, run directly (CI doesn't run on PRs)
   pull_request:
     branches: [ main ]
-  push:
-    branches: [ development ]
   workflow_dispatch:
 
 permissions:
   issues: write
   pull-requests: write
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: preview
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    # Run if:
+    # 1. CI workflow succeeded (for development branch)
+    # 2. Pull request event (CI doesn't run on PRs)
+    # 3. Manual dispatch
+    # 4. Ensure it's from the same repository for PRs
+    if: |
+      (github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name == 'workflow_dispatch')
     concurrency:
       group: preview-${{ github.ref }}
       cancel-in-progress: true
@@ -23,6 +37,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        # For workflow_run events, we need to checkout the correct ref
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
         
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -33,13 +50,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      # Only run build/test steps for pull requests (since CI doesn't run on PRs)
       - name: Run type check
+        if: github.event_name == 'pull_request'
         run: npm run type-check
         
       - name: Run linting
+        if: github.event_name == 'pull_request'
         run: npm run lint
         
       - name: Run tests
+        if: github.event_name == 'pull_request'
         run: npm run test:run
         
       - name: Build project
