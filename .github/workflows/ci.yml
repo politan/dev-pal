@@ -4,9 +4,11 @@ name: CI - Build and Test
 on:
   push:
     branches:
-      - '**'  # Run on all branches
+      - main
+      - development
   pull_request:
     branches:
+      - main
       - development
 
 # Set permissions for the workflow
