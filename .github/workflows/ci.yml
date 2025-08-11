@@ -5,8 +5,9 @@ on:
   push:
     branches:
       - '**'  # Run on all branches
-  # Explicitly exclude pull_request events since we only want branch commits
-  # pull_request: <-- commented out to exclude
+  pull_request:
+    branches:
+      - development
 
 # Set permissions for the workflow
 permissions:
