@@ -20,7 +20,6 @@
                 class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="{ 'bg-accent text-accent-foreground': currentTool === tool.id }"
                 :aria-current="currentTool === tool.id ? 'page' : undefined"
-                :tabindex="currentTool === tool.id ? 0 : -1"
               >
                 <component :is="tool.icon" class="w-4 h-4 mr-3" />
                 {{ tool.name }}
@@ -42,7 +41,6 @@
                 class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="{ 'bg-accent text-accent-foreground': currentTool === tool.id }"
                 :aria-current="currentTool === tool.id ? 'page' : undefined"
-                :tabindex="currentTool === tool.id ? 0 : -1"
               >
                 <component :is="tool.icon" class="w-4 h-4 mr-3" />
                 {{ tool.name }}
@@ -64,7 +62,6 @@
                 class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="{ 'bg-accent text-accent-foreground': currentTool === tool.id }"
                 :aria-current="currentTool === tool.id ? 'page' : undefined"
-                :tabindex="currentTool === tool.id ? 0 : -1"
               >
                 <component :is="tool.icon" class="w-4 h-4 mr-3" />
                 {{ tool.name }}
@@ -86,7 +83,6 @@
                 class="flex items-center px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 :class="{ 'bg-accent text-accent-foreground': currentTool === tool.id }"
                 :aria-current="currentTool === tool.id ? 'page' : undefined"
-                :tabindex="currentTool === tool.id ? 0 : -1"
               >
                 <component :is="tool.icon" class="w-4 h-4 mr-3" />
                 {{ tool.name }}
