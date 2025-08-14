@@ -176,11 +176,21 @@
       <div class="bg-card border rounded-lg">
         <div class="p-4 border-b border-border">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-medium text-card-foreground flex items-center">
+            <button
+              @click="toggleTokenBreakdown"
+              class="flex items-center text-lg font-medium text-card-foreground hover:text-foreground transition-colors"
+            >
               <Palette class="w-5 h-5 mr-2" />
               Token Breakdown
-            </h3>
+              <ChevronDown 
+                class="w-4 h-4 ml-2 transition-transform duration-200"
+                :class="{ 'rotate-180': showTokenBreakdown }"
+              />
+            </button>
             <div class="flex items-center space-x-2">
+              <span class="text-sm text-muted-foreground">
+                {{ currentAnalysis.tokens.length }} tokens
+              </span>
               <button
                 @click="copyTokensToClipboard"
                 class="flex items-center px-3 py-1 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors"
@@ -198,10 +208,18 @@
             </div>
           </div>
           <p class="text-sm text-muted-foreground mt-1">
-            Each colored segment represents a single token. Hover over tokens to see details.
+            <template v-if="showTokenBreakdown">
+              Each colored segment represents a single token. Hover over tokens to see details.
+            </template>
+            <template v-else>
+              Click to expand and view individual tokens with color-coded visualization.
+            </template>
           </p>
         </div>
-        <div class="p-4">
+        <div 
+          v-if="showTokenBreakdown" 
+          class="p-4 border-t border-border"
+        >
           <div class="flex flex-wrap gap-1 leading-relaxed font-mono text-sm">
             <span
               v-for="token in currentAnalysis.tokens"
@@ -211,6 +229,19 @@
               class="inline-block px-1 py-0.5 rounded cursor-pointer hover:opacity-80 transition-opacity whitespace-pre"
               @click="showTokenDetails(token)"
             >{{ token.text }}</span>
+          </div>
+          <div class="mt-4 pt-4 border-t border-border">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-muted-foreground">
+                Performance tip: Large texts may render slowly. Consider analyzing smaller chunks for better performance.
+              </span>
+              <button
+                @click="showTokenBreakdown = false"
+                class="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Collapse
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -316,7 +347,8 @@ import {
   Download,
   AlertTriangle,
   Info,
-  X
+  X,
+  ChevronDown
 } from 'lucide-vue-next'
 
 import { 
@@ -340,6 +372,7 @@ const currentAnalysis = ref<TokenizedResult | null>(null)
 const analysisHistory = ref<TokenizedResult[]>([])
 const selectedToken = ref<TokenChunk | null>(null)
 const isAnalyzing = ref(false)
+const showTokenBreakdown = ref(false)
 
 // Toast notification
 const showToast = ref(false)
@@ -446,6 +479,10 @@ function showTokenDetails(token: TokenChunk) {
   selectedToken.value = token
 }
 
+function toggleTokenBreakdown() {
+  showTokenBreakdown.value = !showTokenBreakdown.value
+}
+
 function getContrastColor(hexColor: string): string {
   // Convert hex to RGB
   const hex = hexColor.replace('#', '')
@@ -548,9 +585,11 @@ defineExpose({
   currentAnalysis,
   analysisHistory,
   realTimeAnalysis,
+  showTokenBreakdown,
   analyzeCurrentText,
   clearText,
   clearHistory,
-  exportAnalysis
+  exportAnalysis,
+  toggleTokenBreakdown
 })
 </script>
