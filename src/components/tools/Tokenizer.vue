@@ -173,7 +173,7 @@
       </div>
 
       <!-- Token Visualization -->
-      <div class="bg-card border rounded-lg">
+      <div v-if="currentAnalysis.tokens.length > 0" class="bg-card border rounded-lg">
         <div class="p-4 border-b border-border">
           <div class="flex items-center justify-between">
             <button
@@ -399,7 +399,7 @@ watch([selectedModel, selectedRole], reanalyzeText)
 
 // Functions
 function handleTextInput() {
-  if (realTimeAnalysis.value && inputText.value.trim()) {
+  if (realTimeAnalysis.value) {
     // Debounce the analysis to avoid excessive API calls
     if (debounceTimer) {
       clearTimeout(debounceTimer)
@@ -412,7 +412,20 @@ function handleTextInput() {
 
 function analyzeCurrentText() {
   if (!inputText.value.trim()) {
-    currentAnalysis.value = null
+    // For empty text, create a zero-state analysis result instead of null
+    const emptyResult: TokenizedResult = {
+      id: `empty-analysis-${Date.now()}`,
+      text: '',
+      tokens: [],
+      totalTokens: 0,
+      characterCount: 0,
+      wordCount: 0,
+      estimatedCost: 0,
+      model: selectedModel.value,
+      role: selectedRole.value,
+      timestamp: new Date()
+    }
+    currentAnalysis.value = emptyResult
     return
   }
 
@@ -459,8 +472,11 @@ function reanalyzeText() {
 
 function clearText() {
   inputText.value = ''
-  currentAnalysis.value = null
   selectedToken.value = null
+  // Trigger analysis for empty text to show zero stats
+  if (realTimeAnalysis.value) {
+    analyzeCurrentText()
+  }
 }
 
 function clearHistory() {
