@@ -32,88 +32,97 @@ export interface MessageRole {
 }
 
 export type SupportedModel = 
-  | 'gpt-3.5-turbo'
-  | 'gpt-4'
-  | 'gpt-4-turbo'
-  | 'gpt-4o'
-  | 'gpt-4o-mini'
-  | 'claude-3-haiku'
-  | 'claude-3-sonnet'
-  | 'claude-3.5-sonnet'
-  | 'claude-3-opus'
+  | 'gpt-5'
+  | 'gpt-5-pro'
+  | 'gpt-5-mini'
+  | 'gpt-5-nano'
+  | 'claude-4-sonnet'
+  | 'claude-4-opus'
+  | 'claude-opus-4.1'
+  | 'gemini-2.5-flash'
+  | 'gemini-2.5-pro'
+  | 'gemini-2.5-flash-lite'
 
-// Model configurations with pricing (per 1K tokens)
+// Model configurations with pricing (per 1K tokens) - Updated for 2025 models
 export const MODEL_CONFIGS = {
-  'gpt-3.5-turbo': {
-    name: 'GPT-3.5 Turbo',
-    encoding: 'cl100k_base',
-    inputPrice: 0.0010, // $0.001 per 1K input tokens
-    outputPrice: 0.0020, // $0.002 per 1K output tokens
-    maxTokens: 16385,
-    supportsNativeTokenization: true
-  },
-  'gpt-4': {
-    name: 'GPT-4',
-    encoding: 'cl100k_base',
-    inputPrice: 0.0300, // $0.03 per 1K input tokens
-    outputPrice: 0.0600, // $0.06 per 1K output tokens
-    maxTokens: 8192,
-    supportsNativeTokenization: true
-  },
-  'gpt-4-turbo': {
-    name: 'GPT-4 Turbo',
-    encoding: 'cl100k_base',
-    inputPrice: 0.0100, // $0.01 per 1K input tokens
-    outputPrice: 0.0300, // $0.03 per 1K output tokens
-    maxTokens: 128000,
-    supportsNativeTokenization: true
-  },
-  'gpt-4o': {
-    name: 'GPT-4o',
+  'gpt-5': {
+    name: 'GPT-5',
     encoding: 'o200k_base',
-    inputPrice: 0.0025, // $0.0025 per 1K input tokens
-    outputPrice: 0.0100, // $0.01 per 1K output tokens
-    maxTokens: 128000,
-    supportsNativeTokenization: true
-  },
-  'gpt-4o-mini': {
-    name: 'GPT-4o Mini',
-    encoding: 'o200k_base',
-    inputPrice: 0.000150, // $0.00015 per 1K input tokens
-    outputPrice: 0.000600, // $0.0006 per 1K output tokens
-    maxTokens: 128000,
-    supportsNativeTokenization: true
-  },
-  'claude-3-haiku': {
-    name: 'Claude 3 Haiku',
-    encoding: 'cl100k_base', // Approximation using GPT tokenizer
-    inputPrice: 0.00025, // $0.00025 per 1K input tokens
-    outputPrice: 0.00125, // $0.00125 per 1K output tokens
-    maxTokens: 200000,
-    supportsNativeTokenization: false
-  },
-  'claude-3-sonnet': {
-    name: 'Claude 3 Sonnet',
-    encoding: 'cl100k_base', // Approximation using GPT tokenizer
     inputPrice: 0.003, // $0.003 per 1K input tokens
     outputPrice: 0.015, // $0.015 per 1K output tokens
     maxTokens: 200000,
-    supportsNativeTokenization: false
+    supportsNativeTokenization: true
   },
-  'claude-3.5-sonnet': {
-    name: 'Claude 3.5 Sonnet',
-    encoding: 'cl100k_base', // Approximation using GPT tokenizer
-    inputPrice: 0.003, // $0.003 per 1K input tokens
-    outputPrice: 0.015, // $0.015 per 1K output tokens
-    maxTokens: 200000,
-    supportsNativeTokenization: false
-  },
-  'claude-3-opus': {
-    name: 'Claude 3 Opus',
-    encoding: 'cl100k_base', // Approximation using GPT tokenizer
+  'gpt-5-pro': {
+    name: 'GPT-5 Pro',
+    encoding: 'o200k_base',
     inputPrice: 0.015, // $0.015 per 1K input tokens
-    outputPrice: 0.075, // $0.075 per 1K output tokens
+    outputPrice: 0.060, // $0.060 per 1K output tokens
     maxTokens: 200000,
+    supportsNativeTokenization: true
+  },
+  'gpt-5-mini': {
+    name: 'GPT-5 Mini',
+    encoding: 'o200k_base',
+    inputPrice: 0.0005, // $0.0005 per 1K input tokens
+    outputPrice: 0.002, // $0.002 per 1K output tokens
+    maxTokens: 200000,
+    supportsNativeTokenization: true
+  },
+  'gpt-5-nano': {
+    name: 'GPT-5 Nano',
+    encoding: 'o200k_base',
+    inputPrice: 0.0001, // $0.0001 per 1K input tokens
+    outputPrice: 0.0005, // $0.0005 per 1K output tokens
+    maxTokens: 128000,
+    supportsNativeTokenization: true
+  },
+  'claude-4-sonnet': {
+    name: 'Claude 4 Sonnet',
+    encoding: 'cl100k_base', // Approximation using GPT tokenizer
+    inputPrice: 0.003, // $3 per 1M tokens = $0.003 per 1K tokens
+    outputPrice: 0.015, // $15 per 1M tokens = $0.015 per 1K tokens
+    maxTokens: 1000000, // 1M context window
+    supportsNativeTokenization: false
+  },
+  'claude-4-opus': {
+    name: 'Claude 4 Opus',
+    encoding: 'cl100k_base', // Approximation using GPT tokenizer
+    inputPrice: 0.015, // $15 per 1M tokens = $0.015 per 1K tokens
+    outputPrice: 0.075, // $75 per 1M tokens = $0.075 per 1K tokens
+    maxTokens: 1000000, // 1M context window
+    supportsNativeTokenization: false
+  },
+  'claude-opus-4.1': {
+    name: 'Claude Opus 4.1',
+    encoding: 'cl100k_base', // Approximation using GPT tokenizer
+    inputPrice: 0.015, // $15 per 1M tokens = $0.015 per 1K tokens
+    outputPrice: 0.075, // $75 per 1M tokens = $0.075 per 1K tokens
+    maxTokens: 1000000, // 1M context window
+    supportsNativeTokenization: false
+  },
+  'gemini-2.5-flash': {
+    name: 'Gemini 2.5 Flash',
+    encoding: 'cl100k_base', // Approximation using GPT tokenizer
+    inputPrice: 0.0005, // Estimated based on Google's pricing
+    outputPrice: 0.002, // Estimated based on Google's pricing
+    maxTokens: 1000000, // 1M context window
+    supportsNativeTokenization: false
+  },
+  'gemini-2.5-pro': {
+    name: 'Gemini 2.5 Pro',
+    encoding: 'cl100k_base', // Approximation using GPT tokenizer
+    inputPrice: 0.01, // Higher pricing for Pro model
+    outputPrice: 0.04, // Higher pricing for Pro model
+    maxTokens: 1000000, // 1M context window
+    supportsNativeTokenization: false
+  },
+  'gemini-2.5-flash-lite': {
+    name: 'Gemini 2.5 Flash Lite',
+    encoding: 'cl100k_base', // Approximation using GPT tokenizer
+    inputPrice: 0.0001, // $0.10 per 1M tokens = $0.0001 per 1K tokens
+    outputPrice: 0.0004, // $0.40 per 1M tokens = $0.0004 per 1K tokens
+    maxTokens: 1000000, // 1M context window
     supportsNativeTokenization: false
   }
 } as const
@@ -140,8 +149,8 @@ export function countTokensOpenAI(text: string, model: SupportedModel): number {
   try {
     const config = MODEL_CONFIGS[model]
     
-    if (model === 'gpt-4o' || model === 'gpt-4o-mini') {
-      // For GPT-4o models, use o200k_base encoding
+    if (model.startsWith('gpt-5')) {
+      // For GPT-5 models, use o200k_base encoding
       const encoding = getEncoding('o200k_base')
       const tokens = encoding.encode(text)
       // Safely free encoding if method exists
@@ -150,8 +159,8 @@ export function countTokensOpenAI(text: string, model: SupportedModel): number {
       }
       return tokens.length
     } else {
-      // For other OpenAI models, use the model-specific encoding
-      const encoding = encodingForModel(model as 'gpt-3.5-turbo' | 'gpt-4')
+      // Fallback for any other models
+      const encoding = getEncoding('cl100k_base')
       const tokens = encoding.encode(text)
       // Safely free encoding if method exists
       if (typeof encoding.free === 'function') {
@@ -217,12 +226,12 @@ export function tokenizeText(text: string, model: SupportedModel): TokenChunk[] 
     const config = MODEL_CONFIGS[model]
     let encoding
     
-    if (model === 'gpt-4o' || model === 'gpt-4o-mini') {
+    if (model.startsWith('gpt-5')) {
       encoding = getEncoding('o200k_base')
     } else if (config.supportsNativeTokenization) {
-      encoding = encodingForModel(model as 'gpt-3.5-turbo' | 'gpt-4')
+      encoding = getEncoding('cl100k_base')
     } else {
-      // Use cl100k_base for Claude approximation
+      // Use cl100k_base for non-OpenAI models (Claude, Gemini) as approximation
       encoding = getEncoding('cl100k_base')
     }
     

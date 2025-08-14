@@ -7,7 +7,7 @@ The Tokenizer is a comprehensive AI token analysis tool that provides accurate t
 ## Features
 
 ### Core Functionality
-- **Multi-Model Support**: Supports GPT-3.5, GPT-4, GPT-4 Turbo, GPT-4o, GPT-4o Mini, and Claude 3 family models
+- **Multi-Model Support**: Supports GPT-5 family (GPT-5, GPT-5 Pro, GPT-5 Mini, GPT-5 Nano), Claude 4 family (Claude 4 Sonnet, Claude 4 Opus, Claude Opus 4.1), and Google Gemini 2.5 models (Flash, Pro, Flash Lite)
 - **Role-Based Analysis**: Accurate token counting for system, user, and assistant message roles
 - **Real-Time Analysis**: Optional live token counting as you type with intelligent debouncing
 - **Cost Estimation**: Precise cost calculations based on current API pricing (input/output token differentiation)
@@ -127,19 +127,23 @@ const TOKEN_COLORS = [
 
 ## API Integration
 
-### Model Support Matrix
+### Model Support Matrix (2025 Updated)
 
 | Model | Native Support | Encoding | Max Tokens | Input Price (per 1K) | Output Price (per 1K) |
 |-------|----------------|----------|------------|---------------------|----------------------|
-| GPT-3.5 Turbo | ✅ | cl100k_base | 16,385 | $0.0010 | $0.0020 |
-| GPT-4 | ✅ | cl100k_base | 8,192 | $0.0300 | $0.0600 |
-| GPT-4 Turbo | ✅ | cl100k_base | 128,000 | $0.0100 | $0.0300 |
-| GPT-4o | ✅ | o200k_base | 128,000 | $0.0025 | $0.0100 |
-| GPT-4o Mini | ✅ | o200k_base | 128,000 | $0.000150 | $0.000600 |
-| Claude 3 Haiku | 🔶 | Approximated | 200,000 | $0.00025 | $0.00125 |
-| Claude 3 Sonnet | 🔶 | Approximated | 200,000 | $0.003 | $0.015 |
-| Claude 3.5 Sonnet | 🔶 | Approximated | 200,000 | $0.003 | $0.015 |
-| Claude 3 Opus | 🔶 | Approximated | 200,000 | $0.015 | $0.075 |
+| **OpenAI GPT-5 Family** |
+| GPT-5 | ✅ | o200k_base | 200,000 | $0.003 | $0.015 |
+| GPT-5 Pro | ✅ | o200k_base | 200,000 | $0.015 | $0.060 |
+| GPT-5 Mini | ✅ | o200k_base | 200,000 | $0.0005 | $0.002 |
+| GPT-5 Nano | ✅ | o200k_base | 128,000 | $0.0001 | $0.0005 |
+| **Anthropic Claude 4 Family** |
+| Claude 4 Sonnet | 🔶 | Approximated | 1,000,000 | $0.003 | $0.015 |
+| Claude 4 Opus | 🔶 | Approximated | 1,000,000 | $0.015 | $0.075 |
+| Claude Opus 4.1 | 🔶 | Approximated | 1,000,000 | $0.015 | $0.075 |
+| **Google Gemini 2.5 Family** |
+| Gemini 2.5 Flash | 🔶 | Approximated | 1,000,000 | $0.0005 | $0.002 |
+| Gemini 2.5 Pro | 🔶 | Approximated | 1,000,000 | $0.01 | $0.04 |
+| Gemini 2.5 Flash Lite | 🔶 | Approximated | 1,000,000 | $0.0001 | $0.0004 |
 
 *Note: 🔶 indicates approximated tokenization*
 
@@ -168,12 +172,12 @@ This ensures token counts include the overhead for message structure, matching a
 import { analyzeText, MESSAGE_ROLES } from '@/utils/tokenizer'
 
 const result = analyzeText("Hello, world!", {
-  model: 'gpt-4o-mini',
+  model: 'gpt-5-mini',
   role: MESSAGE_ROLES[1] // User role
 })
 
 console.log(result.totalTokens) // e.g., 6
-console.log(result.estimatedCost) // e.g., 0.000009
+console.log(result.estimatedCost) // e.g., 0.000003
 ```
 
 ### Token Visualization
@@ -181,7 +185,7 @@ console.log(result.estimatedCost) // e.g., 0.000009
 ```javascript
 import { tokenizeText } from '@/utils/tokenizer'
 
-const tokens = tokenizeText("Hello, world!", 'gpt-4o-mini')
+const tokens = tokenizeText("Hello, world!", 'gpt-5-mini')
 tokens.forEach(token => {
   console.log(`Token: "${token.text}", Color: ${token.color}`)
 })
@@ -191,7 +195,7 @@ tokens.forEach(token => {
 
 ```javascript
 const text = "Your sample text here"
-const models = ['gpt-3.5-turbo', 'gpt-4o', 'claude-3.5-sonnet']
+const models = ['gpt-5-mini', 'gpt-5', 'claude-4-sonnet', 'gemini-2.5-flash']
 
 models.forEach(model => {
   const result = analyzeText(text, { 
