@@ -1,0 +1,17 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import ToolPage from '../../components/ToolPage.vue';
+import TokenizerTool from '../../components/tools/Tokenizer.vue';
+import { Coins } from 'lucide-vue-next';
+---
+
+<AppLayout title="Tokenizer - DevPal" currentTool="tokenizer">
+  <ToolPage 
+    title="AI Tokenizer"
+    description="Analyze token count and costs for OpenAI GPT and Anthropic Claude models with interactive token visualization"
+    icon={Coins}
+    tags={['AI', 'Tokens', 'GPT', 'Claude', 'Cost Analysis', 'Visualization']}
+  >
+    <TokenizerTool client:load />
+  </ToolPage>
+</AppLayout>

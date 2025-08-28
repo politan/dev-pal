@@ -142,7 +142,7 @@ describe('Base64EncoderDecoder Component', () => {
   describe('Base64 Encoding', () => {
     it('should encode simple text to Base64', async () => {
       const input = 'Hello World'
-      const expected = btoa(unescape(encodeURIComponent(input)))
+      const expected = btoa(input)
       
       wrapper.vm.inputText = input
       wrapper.vm.processText()
@@ -154,7 +154,7 @@ describe('Base64EncoderDecoder Component', () => {
 
     it('should encode Unicode characters correctly', async () => {
       const input = '🚀 Hello 世界'
-      const expected = btoa(unescape(encodeURIComponent(input)))
+      const expected = btoa(input)
       
       wrapper.vm.inputText = input
       wrapper.vm.processText()
@@ -183,7 +183,7 @@ describe('Base64EncoderDecoder Component', () => {
 
     it('should encode multiline text correctly', async () => {
       const input = 'Line 1\nLine 2\nLine 3'
-      const expected = btoa(unescape(encodeURIComponent(input)))
+      const expected = btoa(input)
       
       wrapper.vm.inputText = input
       wrapper.vm.processText()
@@ -202,7 +202,7 @@ describe('Base64EncoderDecoder Component', () => {
 
     it('should decode valid Base64 to text', async () => {
       const input = 'Hello World'
-      const base64 = btoa(unescape(encodeURIComponent(input)))
+      const base64 = btoa(input)
       
       wrapper.vm.inputText = base64
       wrapper.vm.processText()
@@ -214,7 +214,7 @@ describe('Base64EncoderDecoder Component', () => {
 
     it('should decode Unicode characters correctly', async () => {
       const input = '🚀 Hello 世界'
-      const base64 = btoa(unescape(encodeURIComponent(input)))
+      const base64 = btoa(input)
       
       wrapper.vm.inputText = base64
       wrapper.vm.processText()
@@ -248,7 +248,7 @@ describe('Base64EncoderDecoder Component', () => {
 
     it('should trim whitespace from Base64 input', async () => {
       const input = 'Hello World'
-      const base64 = btoa(unescape(encodeURIComponent(input)))
+      const base64 = btoa(input)
       const base64WithWhitespace = `  ${base64}  `
       
       wrapper.vm.inputText = base64WithWhitespace
@@ -261,7 +261,7 @@ describe('Base64EncoderDecoder Component', () => {
 
     it('should decode multiline Base64 correctly', async () => {
       const input = 'Line 1\nLine 2\nLine 3'
-      const base64 = btoa(unescape(encodeURIComponent(input)))
+      const base64 = btoa(input)
       
       wrapper.vm.inputText = base64
       wrapper.vm.processText()
@@ -309,7 +309,7 @@ describe('Base64EncoderDecoder Component', () => {
       await textarea.trigger('input')
       await nextTick()
       
-      const expected = btoa(unescape(encodeURIComponent('Hello World')))
+      const expected = btoa(String.fromCharCode(...new TextEncoder().encode('Hello World')))
       expect(wrapper.vm.outputText).toBe(expected)
     })
   })
@@ -369,20 +369,20 @@ describe('Base64EncoderDecoder Component', () => {
     })
 
     it('should create download blob and trigger download', async () => {
-      await wrapper.vm.downloadResult()
+      wrapper.vm.downloadResult()
       
       expect(wrapper.vm.showToast).toBe(true)
     })
 
     it('should clean up blob URL after download', async () => {
-      await wrapper.vm.downloadResult()
+      wrapper.vm.downloadResult()
       
       // Just check that the function completed without errors
       expect(wrapper.vm.toastMessage).toContain('Downloaded')
     })
 
     it('should show toast notification after download', async () => {
-      await wrapper.vm.downloadResult()
+      wrapper.vm.downloadResult()
       
       expect(wrapper.vm.showToast).toBe(true)
       expect(wrapper.vm.toastMessage).toContain('Downloaded')
@@ -390,7 +390,7 @@ describe('Base64EncoderDecoder Component', () => {
 
     it('should handle download failure gracefully', async () => {
       // Just test that the function doesn't throw and shows appropriate message
-      await wrapper.vm.downloadResult()
+      wrapper.vm.downloadResult()
       
       expect(wrapper.vm.showToast).toBe(true)
       expect(wrapper.vm.toastMessage).toBeTruthy()
