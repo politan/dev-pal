@@ -20,7 +20,7 @@
     "@astrojs/tailwind": "^6.0.2",
     "@astrojs/vue": "^5.1.0",
     "@vueuse/core": "^13.6.0",
-    "astro": "^5.12.9",
+    "astro": "^5.13.2",
     "js-tiktoken": "^1.0.21",
     "lucide-vue-next": "^0.539.0",
     "typescript": "^5.9.2",
