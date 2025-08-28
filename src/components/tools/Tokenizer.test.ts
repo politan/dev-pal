@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi, type MockedFunction } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import Tokenizer from './Tokenizer.vue'
 import * as tokenizerUtils from '../../utils/tokenizer'
 
@@ -13,28 +13,28 @@ vi.mock('../../utils/tokenizer', () => ({
     { type: 'assistant', label: 'Assistant Message' }
   ],
   MODEL_CONFIGS: {
-    'gpt-4o-mini': {
-      name: 'GPT-4o Mini',
+    'gpt-5-mini': {
+      name: 'GPT-5 Mini',
       encoding: 'o200k_base',
-      inputPrice: 0.000150,
-      outputPrice: 0.000600,
-      maxTokens: 128000,
+      inputPrice: 0.0005,
+      outputPrice: 0.002,
+      maxTokens: 200000,
       supportsNativeTokenization: true
     },
-    'gpt-4o': {
-      name: 'GPT-4o',
+    'gpt-5': {
+      name: 'GPT-5',
       encoding: 'o200k_base',
-      inputPrice: 0.0025,
-      outputPrice: 0.0100,
-      maxTokens: 128000,
-      supportsNativeTokenization: true
-    },
-    'claude-3.5-sonnet': {
-      name: 'Claude 3.5 Sonnet',
-      encoding: 'cl100k_base',
       inputPrice: 0.003,
       outputPrice: 0.015,
       maxTokens: 200000,
+      supportsNativeTokenization: true
+    },
+    'claude-4-sonnet': {
+      name: 'Claude 4 Sonnet',
+      encoding: 'cl100k_base',
+      inputPrice: 0.003,
+      outputPrice: 0.015,
+      maxTokens: 1000000,
       supportsNativeTokenization: false
     }
   },
@@ -85,7 +85,7 @@ describe('Tokenizer Component', () => {
     characterCount: 13,
     wordCount: 2,
     estimatedCost: 0.000009,
-    model: 'gpt-4o-mini' as const,
+    model: 'gpt-5-mini' as const,
     role: { type: 'user' as const, label: 'User Message' },
     timestamp: new Date('2024-01-01T12:00:00Z')
   }
@@ -115,9 +115,9 @@ describe('Tokenizer Component', () => {
     it('should render with default state', () => {
       const wrapper = mount(Tokenizer)
       
-      expect(wrapper.find('select').element.value).toBe('gpt-4o-mini')
+      expect(wrapper.find('select').element.value).toBe('gpt-5-mini')
       expect(wrapper.find('textarea').attributes('placeholder')).toContain('Enter your text here')
-      expect(wrapper.find('input[type="checkbox"]').element.checked).toBe(true) // Real-time analysis
+      expect((wrapper.find('input[type="checkbox"]').element as HTMLInputElement).checked).toBe(true) // Real-time analysis
     })
 
     it('should initialize with sample text and analyze it', async () => {

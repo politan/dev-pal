@@ -1,4 +1,4 @@
-import { encodingForModel, getEncoding } from 'js-tiktoken'
+import { getEncoding } from 'js-tiktoken'
 
 export interface TokenizerOptions {
   model: SupportedModel
@@ -147,25 +147,15 @@ const TOKEN_COLORS = [
  */
 export function countTokensOpenAI(text: string, model: SupportedModel): number {
   try {
-    const config = MODEL_CONFIGS[model]
-    
     if (model.startsWith('gpt-5')) {
       // For GPT-5 models, use o200k_base encoding
       const encoding = getEncoding('o200k_base')
       const tokens = encoding.encode(text)
-      // Safely free encoding if method exists
-      if (typeof encoding.free === 'function') {
-        encoding.free()
-      }
       return tokens.length
     } else {
       // Fallback for any other models
       const encoding = getEncoding('cl100k_base')
       const tokens = encoding.encode(text)
-      // Safely free encoding if method exists
-      if (typeof encoding.free === 'function') {
-        encoding.free()
-      }
       return tokens.length
     }
   } catch (error) {
@@ -173,10 +163,6 @@ export function countTokensOpenAI(text: string, model: SupportedModel): number {
     // Fallback to cl100k_base encoding
     const encoding = getEncoding('cl100k_base')
     const tokens = encoding.encode(text)
-    // Safely free encoding if method exists
-    if (typeof encoding.free === 'function') {
-      encoding.free()
-    }
     return tokens.length
   }
 }
@@ -190,10 +176,6 @@ export function countTokensClaude(text: string): number {
     // Use cl100k_base as approximation - Claude typically has similar token counts
     const encoding = getEncoding('cl100k_base')
     const tokens = encoding.encode(text)
-    // Safely free encoding if method exists
-    if (typeof encoding.free === 'function') {
-      encoding.free()
-    }
     
     // Apply a small adjustment factor based on empirical observations
     // Claude tokens tend to be slightly different, but this is a reasonable approximation
@@ -251,10 +233,6 @@ export function tokenizeText(text: string, model: SupportedModel): TokenChunk[] 
       })
     }
     
-    // Safely free encoding if method exists
-    if (typeof encoding.free === 'function') {
-      encoding.free()
-    }
     return chunks
     
   } catch (error) {
@@ -322,7 +300,7 @@ export function analyzeText(text: string, options: TokenizerOptions): TokenizedR
   const estimatedCost = calculateEstimatedCost(totalTokens, options.model, options.role)
   
   return {
-    id: `analysis-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `analysis-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
     text,
     tokens,
     totalTokens,

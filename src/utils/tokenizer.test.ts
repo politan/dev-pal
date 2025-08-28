@@ -19,26 +19,26 @@ import {
 vi.mock('js-tiktoken', () => {
   const mockEncoding = {
     encode: vi.fn(),
-    decode: vi.fn(),
-    free: vi.fn()
+    decode: vi.fn()
   }
 
   return {
-    encodingForModel: vi.fn(() => mockEncoding),
     getEncoding: vi.fn(() => mockEncoding)
   }
 })
 
 describe('tokenizer utility functions', () => {
-  const { encodingForModel, getEncoding } = vi.hoisted(() => {
-    return vi.importMock('js-tiktoken')
-  })
+  const mockEncoding = {
+    encode: vi.fn(),
+    decode: vi.fn()
+  }
+  
+  const getEncoding = vi.fn(() => mockEncoding)
 
   beforeEach(() => {
     vi.clearAllMocks()
     
-    // Setup mock encoding responses
-    const mockEncoding = encodingForModel() as any
+    // Setup mock encoding responses  
     mockEncoding.encode.mockReturnValue([1, 2, 3, 4, 5]) // 5 tokens
     mockEncoding.decode.mockImplementation((tokens: number[]) => {
       const tokenTexts = ['Hello', ',', ' world', '!', '']
@@ -47,39 +47,32 @@ describe('tokenizer utility functions', () => {
   })
 
   describe('countTokensOpenAI', () => {
-    it('should count tokens correctly for GPT-3.5', () => {
-      const result = countTokensOpenAI('Hello, world!', 'gpt-3.5-turbo')
-      expect(result).toBe(5)
-      expect(encodingForModel).toHaveBeenCalledWith('gpt-3.5-turbo')
-    })
-
-    it('should count tokens correctly for GPT-4', () => {
-      const result = countTokensOpenAI('Hello, world!', 'gpt-4')
-      expect(result).toBe(5)
-      expect(encodingForModel).toHaveBeenCalledWith('gpt-4')
-    })
-
-    it('should use o200k_base encoding for GPT-4o models', () => {
-      const result = countTokensOpenAI('Hello, world!', 'gpt-4o')
+    it('should count tokens correctly for GPT-5', () => {
+      const result = countTokensOpenAI('Hello, world!', 'gpt-5')
       expect(result).toBe(5)
       expect(getEncoding).toHaveBeenCalledWith('o200k_base')
     })
 
+    it('should count tokens correctly for GPT-5-mini', () => {
+      const result = countTokensOpenAI('Hello, world!', 'gpt-5-mini')
+      expect(result).toBe(5)
+      expect(getEncoding).toHaveBeenCalledWith('o200k_base')
+    })
+
+    it('should use cl100k_base encoding for non-GPT-5 models', () => {
+      const result = countTokensOpenAI('Hello, world!', 'claude-4-sonnet')
+      expect(result).toBe(5)
+      expect(getEncoding).toHaveBeenCalledWith('cl100k_base')
+    })
+
     it('should handle encoding errors gracefully', () => {
-      const mockEncoding = encodingForModel() as any
       mockEncoding.encode.mockImplementation(() => {
         throw new Error('Encoding failed')
       })
 
-      const result = countTokensOpenAI('Hello, world!', 'gpt-3.5-turbo')
+      const result = countTokensOpenAI('Hello, world!', 'gpt-5')
       expect(result).toBe(5) // Should fall back to cl100k_base
       expect(getEncoding).toHaveBeenCalledWith('cl100k_base')
-    })
-
-    it('should free encoding resources', () => {
-      countTokensOpenAI('Hello, world!', 'gpt-3.5-turbo')
-      const mockEncoding = encodingForModel() as any
-      expect(mockEncoding.free).toHaveBeenCalled()
     })
   })
 
@@ -91,7 +84,6 @@ describe('tokenizer utility functions', () => {
     })
 
     it('should handle encoding errors with character fallback', () => {
-      const mockEncoding = getEncoding() as any
       mockEncoding.encode.mockImplementation(() => {
         throw new Error('Encoding failed')
       })
@@ -100,22 +92,17 @@ describe('tokenizer utility functions', () => {
       expect(result).toBe(Math.ceil('Hello, world!'.length / 4)) // ~4 chars per token
     })
 
-    it('should free encoding resources', () => {
-      countTokensClaude('Hello, world!')
-      const mockEncoding = getEncoding() as any
-      expect(mockEncoding.free).toHaveBeenCalled()
-    })
   })
 
   describe('countTokens', () => {
     it('should use OpenAI tokenizer for supported models', () => {
-      const result = countTokens('Hello, world!', 'gpt-4o')
+      const result = countTokens('Hello, world!', 'gpt-5')
       expect(result).toBe(5)
       expect(getEncoding).toHaveBeenCalledWith('o200k_base')
     })
 
     it('should use Claude approximation for Claude models', () => {
-      const result = countTokens('Hello, world!', 'claude-3.5-sonnet')
+      const result = countTokens('Hello, world!', 'claude-4-sonnet')
       expect(result).toBe(Math.round(5 * 1.05))
       expect(getEncoding).toHaveBeenCalledWith('cl100k_base')
     })
@@ -123,7 +110,6 @@ describe('tokenizer utility functions', () => {
 
   describe('tokenizeText', () => {
     beforeEach(() => {
-      const mockEncoding = encodingForModel() as any
       mockEncoding.encode.mockReturnValue([101, 102, 103, 104]) // 4 tokens
       mockEncoding.decode.mockImplementation((tokens: number[]) => {
         const tokenMap: { [key: number]: string } = {
@@ -137,7 +123,7 @@ describe('tokenizer utility functions', () => {
     })
 
     it('should return detailed token chunks with colors', () => {
-      const result = tokenizeText('Hello, world!', 'gpt-4o')
+      const result = tokenizeText('Hello, world!', 'gpt-5')
       
       expect(result).toHaveLength(4)
       expect(result[0]).toEqual({
@@ -151,18 +137,17 @@ describe('tokenizer utility functions', () => {
     })
 
     it('should handle different models correctly', () => {
-      const result = tokenizeText('Test', 'claude-3-haiku')
+      const result = tokenizeText('Test', 'claude-4-sonnet')
       expect(getEncoding).toHaveBeenCalledWith('cl100k_base') // Claude uses approximation
       expect(result.length).toBeGreaterThan(0)
     })
 
     it('should provide fallback for tokenization errors', () => {
-      const mockEncoding = encodingForModel() as any
       mockEncoding.encode.mockImplementation(() => {
         throw new Error('Tokenization failed')
       })
 
-      const result = tokenizeText('Hello world', 'gpt-4')
+      const result = tokenizeText('Hello world', 'gpt-5')
       expect(result.length).toBeGreaterThan(0)
       expect(result[0]).toEqual(expect.objectContaining({
         id: expect.stringMatching(/^fallback-/),
@@ -191,24 +176,24 @@ describe('tokenizer utility functions', () => {
 
   describe('calculateEstimatedCost', () => {
     it('should calculate cost correctly for input tokens', () => {
-      const cost = calculateEstimatedCost(1000, 'gpt-4o', MESSAGE_ROLES[1]) // user role
-      const expected = (1000 / 1000) * MODEL_CONFIGS['gpt-4o'].inputPrice
+      const cost = calculateEstimatedCost(1000, 'gpt-5', MESSAGE_ROLES[1]) // user role
+      const expected = (1000 / 1000) * MODEL_CONFIGS['gpt-5'].inputPrice
       expect(cost).toBe(expected)
     })
 
     it('should calculate cost correctly for output tokens', () => {
-      const cost = calculateEstimatedCost(1000, 'gpt-4o', MESSAGE_ROLES[2]) // assistant role
-      const expected = (1000 / 1000) * MODEL_CONFIGS['gpt-4o'].outputPrice
+      const cost = calculateEstimatedCost(1000, 'gpt-5', MESSAGE_ROLES[2]) // assistant role
+      const expected = (1000 / 1000) * MODEL_CONFIGS['gpt-5'].outputPrice
       expect(cost).toBe(expected)
     })
 
     it('should handle different models correctly', () => {
-      const cost1 = calculateEstimatedCost(1000, 'gpt-3.5-turbo', MESSAGE_ROLES[1])
-      const cost2 = calculateEstimatedCost(1000, 'gpt-4', MESSAGE_ROLES[1])
+      const cost1 = calculateEstimatedCost(1000, 'gpt-5-mini', MESSAGE_ROLES[1])
+      const cost2 = calculateEstimatedCost(1000, 'gpt-5', MESSAGE_ROLES[1])
       
-      expect(cost1).toBe(MODEL_CONFIGS['gpt-3.5-turbo'].inputPrice)
-      expect(cost2).toBe(MODEL_CONFIGS['gpt-4'].inputPrice)
-      expect(cost2).toBeGreaterThan(cost1) // GPT-4 is more expensive
+      expect(cost1).toBe(MODEL_CONFIGS['gpt-5-mini'].inputPrice)
+      expect(cost2).toBe(MODEL_CONFIGS['gpt-5'].inputPrice)
+      expect(cost2).toBeGreaterThan(cost1) // GPT-5 is more expensive than mini
     })
   })
 
@@ -232,20 +217,20 @@ describe('tokenizer utility functions', () => {
 
   describe('validateTokenLimit', () => {
     it('should validate tokens within limit', () => {
-      const result = validateTokenLimit(1000, 'gpt-4o')
+      const result = validateTokenLimit(1000, 'gpt-5')
       expect(result.isValid).toBe(true)
-      expect(result.maxTokens).toBe(MODEL_CONFIGS['gpt-4o'].maxTokens)
+      expect(result.maxTokens).toBe(MODEL_CONFIGS['gpt-5'].maxTokens)
       expect(result.percentage).toBeLessThan(1)
     })
 
     it('should detect tokens exceeding limit', () => {
-      const result = validateTokenLimit(200000, 'gpt-4') // Exceeds GPT-4 limit
+      const result = validateTokenLimit(300000, 'gpt-5-nano') // Exceeds GPT-5-nano limit
       expect(result.isValid).toBe(false)
       expect(result.percentage).toBeGreaterThan(100)
     })
 
     it('should calculate percentage correctly', () => {
-      const model: SupportedModel = 'gpt-3.5-turbo'
+      const model: SupportedModel = 'gpt-5-mini'
       const tokens = MODEL_CONFIGS[model].maxTokens / 2 // 50% of limit
       const result = validateTokenLimit(tokens, model)
       
@@ -256,13 +241,12 @@ describe('tokenizer utility functions', () => {
 
   describe('analyzeText', () => {
     const mockOptions: TokenizerOptions = {
-      model: 'gpt-4o-mini',
+      model: 'gpt-5-mini',
       role: MESSAGE_ROLES[1]
     }
 
     beforeEach(() => {
       // Setup more detailed mock for complete analysis
-      const mockEncoding = encodingForModel() as any
       mockEncoding.encode.mockReturnValue([1, 2, 3]) // 3 tokens
       mockEncoding.decode.mockImplementation((tokens: number[]) => {
         const tokenTexts = ['Hello', ' ', 'world']
@@ -281,7 +265,7 @@ describe('tokenizer utility functions', () => {
         characterCount: 11,
         wordCount: 2,
         estimatedCost: expect.any(Number),
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-mini',
         role: MESSAGE_ROLES[1],
         timestamp: expect.any(Date)
       }))
@@ -320,8 +304,9 @@ describe('tokenizer utility functions', () => {
   describe('MODEL_CONFIGS', () => {
     it('should have configurations for all supported models', () => {
       const models: SupportedModel[] = [
-        'gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini',
-        'claude-3-haiku', 'claude-3-sonnet', 'claude-3.5-sonnet', 'claude-3-opus'
+        'gpt-5', 'gpt-5-pro', 'gpt-5-mini', 'gpt-5-nano',
+        'claude-4-sonnet', 'claude-4-opus', 'claude-opus-4.1',
+        'gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.5-flash-lite'
       ]
       
       models.forEach(model => {
@@ -338,8 +323,8 @@ describe('tokenizer utility functions', () => {
     })
 
     it('should have correct native tokenization flags', () => {
-      expect(MODEL_CONFIGS['gpt-4o'].supportsNativeTokenization).toBe(true)
-      expect(MODEL_CONFIGS['claude-3.5-sonnet'].supportsNativeTokenization).toBe(false)
+      expect(MODEL_CONFIGS['gpt-5'].supportsNativeTokenization).toBe(true)
+      expect(MODEL_CONFIGS['claude-4-sonnet'].supportsNativeTokenization).toBe(false)
     })
 
     it('should have reasonable pricing values', () => {
@@ -368,7 +353,7 @@ describe('tokenizer utility functions', () => {
 
   describe('edge cases and error handling', () => {
     it('should handle empty text input', () => {
-      const result = analyzeText('', { model: 'gpt-4o', role: MESSAGE_ROLES[0] })
+      const result = analyzeText('', { model: 'gpt-5', role: MESSAGE_ROLES[0] })
       expect(result.text).toBe('')
       expect(result.characterCount).toBe(0)
       expect(result.wordCount).toBe(0)
@@ -376,7 +361,7 @@ describe('tokenizer utility functions', () => {
 
     it('should handle very long text input', () => {
       const longText = 'word '.repeat(10000)
-      const result = analyzeText(longText, { model: 'gpt-4o', role: MESSAGE_ROLES[1] })
+      const result = analyzeText(longText, { model: 'gpt-5', role: MESSAGE_ROLES[1] })
       
       expect(result.text).toBe(longText)
       expect(result.characterCount).toBe(longText.length)
@@ -385,7 +370,7 @@ describe('tokenizer utility functions', () => {
 
     it('should handle special characters and unicode', () => {
       const specialText = '🚀 Hello 世界! @#$%^&*()'
-      const result = analyzeText(specialText, { model: 'gpt-4o', role: MESSAGE_ROLES[1] })
+      const result = analyzeText(specialText, { model: 'gpt-5', role: MESSAGE_ROLES[1] })
       
       expect(result.text).toBe(specialText)
       expect(result.characterCount).toBe(specialText.length)
@@ -393,7 +378,7 @@ describe('tokenizer utility functions', () => {
 
     it('should handle newlines and whitespace', () => {
       const multilineText = 'Line 1\n\nLine 2\t\tTabbed\r\nWindows line'
-      const result = analyzeText(multilineText, { model: 'gpt-4o', role: MESSAGE_ROLES[1] })
+      const result = analyzeText(multilineText, { model: 'gpt-5', role: MESSAGE_ROLES[1] })
       
       expect(result.text).toBe(multilineText)
       expect(result.characterCount).toBe(multilineText.length)
